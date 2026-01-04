@@ -2,7 +2,7 @@ package es.upm.dit.ging.predictor
 import com.mongodb.spark._
 import org.apache.spark.ml.classification.RandomForestClassificationModel
 import org.apache.spark.ml.feature.{Bucketizer, StringIndexerModel, VectorAssembler}
-import org.apache.spark.sql.functions.{concat, from_json, lit}
+import org.apache.spark.sql.functions.{concat, from_json, lit, to_json, struct}
 import org.apache.spark.sql.types.{DataTypes, StructType}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
@@ -14,12 +14,12 @@ object MakePrediction {
     val spark = SparkSession
       .builder
       .appName("StructuredNetworkWordCount")
-      .master("local[*]")
+      .master("spark://spark-master:7077")
       .getOrCreate()
     import spark.implicits._
 
     //Load the arrival delay bucketizer
-    val base_path= "/Users/admin/Downloads/practica_creativa"
+    val base_path= "/practica_creativa"
     val arrivalBucketizerPath = "%s/models/arrival_bucketizer_2.0.bin".format(base_path)
     print(arrivalBucketizerPath.toString())
     val arrivalBucketizer = Bucketizer.load(arrivalBucketizerPath)
@@ -44,7 +44,7 @@ object MakePrediction {
     val df = spark
       .readStream
       .format("kafka")
-      .option("kafka.bootstrap.servers", "localhost:9092")
+      .option("kafka.bootstrap.servers", "kafka:9092")
       .option("subscribe", "flight-delay-ml-request")
       .load()
     df.printSchema()
@@ -140,7 +140,7 @@ object MakePrediction {
     val dataStreamWriter = finalPredictions
       .writeStream
       .format("mongodb")
-      .option("spark.mongodb.connection.uri", "mongodb://127.0.0.1:27017")
+      .option("spark.mongodb.connection.uri", "mongodb://mongo:27017")
       .option("spark.mongodb.database", "agile_data_science")
       .option("checkpointLocation", "/tmp")
       .option("spark.mongodb.collection", "flight_delay_ml_response")
@@ -148,12 +148,27 @@ object MakePrediction {
 
     // run the query
     val query = dataStreamWriter.start()
-    // Console Output for predictions
 
+    val kafkaOutput = finalPredictions
+      .selectExpr(
+        "CAST(UUID AS STRING) AS key",
+        "to_json(struct(*)) AS value"
+      )
+      .writeStream
+      .format("kafka")
+      .option("kafka.bootstrap.servers", "kafka:9092")
+      .option("topic", "flight-delay-ml-response")
+      .option("checkpointLocation", "/tmp/kafka-checkpoint")
+      .outputMode("append")
+      .start()
+
+    // Console Output for predictions
     val consoleOutput = finalPredictions.writeStream
       .outputMode("append")
       .format("console")
       .start()
+      
+    kafkaOutput.awaitTermination()
     consoleOutput.awaitTermination()
   }
 

@@ -1,0 +1,134 @@
+version: "3.8"
+services:
+
+  kafka:
+    image: apache/kafka:3.9.0
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_CLUSTER_ID: practica_bdfi
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  kafka-init:
+    image: apache/kafka:3.9.0
+    depends_on:
+      - kafka
+    command: >
+      bash -lc "
+        until /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list >/dev/null 2>&1; do sleep 1; done
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic flight-delay-ml-request  --replication-factor 1 --partitions 1
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic flight-delay-ml-response --replication-factor 1 --partitions 1"
+
+  mongo:
+    image: mongo:7.0.17
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  mongo-seed:
+    build:
+      context: ./data
+      dockerfile: Dockerfile
+    container_name: mongo-seed
+    depends_on:
+      - mongo
+
+  spark-master:
+    image: apache/spark:3.5.3
+    container_name: spark-master
+    hostname: spark-master
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    command: >
+      /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+        --host spark-master
+
+  spark-worker-1:
+    image: apache/spark:3.5.3
+    container_name: spark-worker-1
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./models:/practica_creativa/models
+    command: >
+      /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker
+        spark://spark-master:7077 --webui-port 8081
+
+  spark-worker-2:
+    image: apache/spark:3.5.3
+    container_name: spark-worker-2
+    depends_on:
+      - spark-master
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./models:/practica_creativa/models
+    command: >
+      /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker
+        spark://spark-master:7077 --webui-port 8082
+
+  spark-submit:
+    image: apache/spark:3.5.3
+    container_name: spark-submit
+    depends_on:
+      - spark-master
+      - spark-worker-1
+      - spark-worker-2
+      - kafka-init
+      - mongo
+      - mongo-seed
+    working_dir: /practica_creativa
+    volumes:
+      - ./flight_prediction:/practica_creativa/flight_prediction
+      - ./models:/practica_creativa/models
+    command:
+          - /bin/bash
+          - -lc
+          - >
+            echo 'Waiting before starting Spark Streaming...' ;
+            sleep 40 ;
+            /opt/spark/bin/spark-submit
+            --class es.upm.dit.ging.predictor.MakePrediction
+            --master spark://spark-master:7077
+            --conf spark.jars.ivy=/tmp/ivy
+            --packages org.mongodb.spark:mongo-spark-connector_2.12:10.4.1,org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.3
+            /practica_creativa/flight_prediction/target/scala-2.12/flight_prediction_2.12-0.1.jar
+
+  predictor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: predictor
+    environment:
+      PROJECT_HOME: "/practica_creativa"
+    working_dir: /practica_creativa
+    ports:
+      - "5001:5001"
+    depends_on:
+      - mongo
+      - mongo-seed
+      - kafka
+      - kafka-init
+      - spark-submit
+    volumes:
+    - ./resources/web:/practica_creativa/resources/web
+
+volumes:
+  mongo_data:
+  kafka_data:

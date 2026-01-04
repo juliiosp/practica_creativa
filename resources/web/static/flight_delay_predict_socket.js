@@ -23,38 +23,41 @@ $( "#flight_delay_classification" ).submit(function( event ) {
     if(response.status == "OK") {
       $( "#result" ).empty().append( "Processing..." );
 
-      // Every 1 second, poll the response url until we get a response
-      poll(response.id);
+      // Abro websocket
+      openSocket(response.id);
     }
   });
 });
 
+var socket = null;
 // Poll the prediction URL
-function poll(id) {
-  var responseUrlBase = "/flights/delays/predict/classify_realtime/response/";
-  console.log("Polling for request id " + id + "...");
+function openSocket(id) {
 
-  // Append the uuid to the URL as a slug argument
-  var predictionUrl = responseUrlBase + id;
+  console.log("Creating WebSocket connection...");
 
-  $.ajax(
-  {
-    url: predictionUrl,
-    type: "GET",
-    complete: conditionalPoll
+  if (socket) {
+    console.log("Closing previous socket");
+    socket.disconnect();
+    socket = null;
+  }
+
+  socket = io();
+
+  socket.on("connect", function() {
+    console.log("Socket connected", socket.id);
+    socket.emit("join", {uuid: id});
   });
-}
 
-// Decide whether to poll based on the response status
-function conditionalPoll(data) {
-  var response = JSON.parse(data.responseText);
+  socket.on("prediction_result", function(prediction) {
+    if (prediction.UUID && prediction.UUID !== id) return;
+    renderPage(prediction);
+    socket.disconnect();
+    socket = null;
+  });
 
-  if(response.status == "OK") {
-    renderPage(response.prediction);
-  }
-  else if(response.status == "WAIT") {
-    setTimeout(function() {poll(response.id)}, 1000);
-  }
+  socket.on("disconnect", function() {
+    console.log("Closing WebSocket");
+  });
 }
 
 // Render the response on the page for splits:

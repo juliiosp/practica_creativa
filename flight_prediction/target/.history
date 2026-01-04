@@ -1,0 +1,14 @@
+ls
+runMain sr.main.scala.es.upm.dit.ging.predictor.MakePrediction.scala
+runMain src.main.scala.es.upm.dit.ging.predictor.MakePrediction.scala
+clear
+runMain src.main.scala.es.upm.dit.ging.predictor.MakePrediction
+exot
+exit
+runMain es.upm.dit.ging.predictor.MakePrediction
+exit
+runMain es.upm.dit.ging.predictor.MakePrediction
+clear
+runMain es.upm.dit.ging.predictor.MakePrediction
+exit
+runMain es.upm.dit.ging.predictor.MakePrediction

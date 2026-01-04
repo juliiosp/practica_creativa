@@ -2,6 +2,8 @@ import sys, os, re
 from flask import Flask, render_template, request
 from pymongo import MongoClient
 from bson import json_util
+from flask_socketio import SocketIO, join_room
+import threading
 
 # Configuration details
 import config
@@ -12,7 +14,15 @@ import predict_utils
 # Set up Flask, Mongo and Elasticsearch
 app = Flask(__name__)
 
-client = MongoClient()
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+@socketio.on("join")
+def on_join(data):
+  uid = data.get("uuid")
+  if uid:
+    join_room(uid)
+
+client = MongoClient("mongodb://mongo:27017")
 
 from pyelasticsearch import ElasticSearch
 elastic = ElasticSearch(config.ELASTIC_URL)
@@ -24,9 +34,26 @@ import iso8601
 import datetime
 
 # Setup Kafka
-from kafka import KafkaProducer
-producer = KafkaProducer(bootstrap_servers=['localhost:9092'],api_version=(0,10))
+from kafka import KafkaProducer, KafkaConsumer
+producer = KafkaProducer(bootstrap_servers=['kafka:9092'],api_version=(0,10))
 PREDICTION_TOPIC = 'flight-delay-ml-request'
+
+RESPONSE_TOPIC = 'flight-delay-ml-response'
+def kafka_response_listener():
+  consumer = KafkaConsumer(
+    RESPONSE_TOPIC,
+    bootstrap_servers=['kafka:9092'],
+    api_version=(0,10),
+    value_deserializer=lambda m: json.loads(m.decode("utf-8"))
+  )
+
+  for msg in consumer:
+    prediction = msg.value
+    uid = prediction.get("UUID")
+    if uid:
+      socketio.emit("prediction_result", prediction, room=uid)
+
+threading.Thread(target = kafka_response_listener, daemon=True).start()
 
 import uuid
 
@@ -538,8 +565,10 @@ def shutdown():
   return 'Server shutting down...'
 
 if __name__ == "__main__":
-    app.run(
+    socketio.run(
+    app,
     debug=True,
     host='0.0.0.0',
-    port='5001'
+    port='5001',
+    allow_unsafe_werkzeug=True
   )
