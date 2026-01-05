@@ -14,7 +14,7 @@ resources/download_data.sh
 ```
 ### Genera .jar
 ```
-cd ../practica_creativa/flight_prediction
+cd flight_prediction
 sbt package
 ```
 ### Levantar aplicación
