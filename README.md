@@ -70,14 +70,6 @@ Y añadimos el DAG
 ```
 cp /home/ibdn/practica_creativa/resources/airflow/setup.py /home/ibdn/airflow/dags/
 ```
-
-Ahora abrimos un terminal, donde se desplegará el scheduler
-```
-cd /home/ibdn/practica_creativa/resources/airflow
-source env_airflow37/bin/activate
-export AIRFLOW_HOME=/home/ibdn/airflow
-export PROJECT_HOME=/home/ibdn/practica_creativa
-```
 Desplegamos el scheduler
 ```
 airflow scheduler
@@ -86,7 +78,6 @@ Ahora abrimos otro terminal, donde se desplegará el servidor web
 ```
 cd /home/ibdn/practica_creativa/resources/airflow
 source env_airflow37/bin/activate
-export AIRFLOW_HOME=/home/ibdn/airflow
 ```
 Desplegamos el servidor
 ```
