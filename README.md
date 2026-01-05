@@ -1,75 +1,96 @@
 # Práctica Creativa BDFI
 Para probar esta práctica hay que seguir estos pasos:
 
-# Clonar repositorio
+### Clonar repositorio
 ```
 git clone https://github.com/juliiosp/practica_creativa.git
 ```
 ```
 cd practica_creativa
 ```
-# Descargar datos
+### Descargar datos
 ```
 resources/download_data.sh
 ```
-## Levantar aplicación
+### Levantar aplicación
 ```
 docker compose up --build
 ```
 
-### Mejoras realizadas
+## Mejoras realizadas
 
-# Aplicación disponible en Google Cloud
-
+### Aplicación disponible en Google Cloud
 La aplicación está desplegada en Google Cloud y se puede acceder a la API Flask directamente desde la siguiente URL:
+```
+http://34.175.194.66:5001/flights/delays/predict_kafka
+```
+Una vez dentro, se puede usar con normalidad.
 
 ### Entrenamiento con Apache Airflow
-
-- The version of Apache Airflow used is the 2.1.4 and it is installed with pip. For development it uses SQLite as database but it is not recommended for production. For the laboratory SQLite is sufficient.
-
-- Install python libraries for Apache Airflow (suggested Python 3.7)
-
-```shell
-cd resources/airflow
+Se ha implementado el entrenamiento con Apache AirFlow. Para conseguirlo hay que realizar los siguientes pasos:
+```
+cd /home/ibdn/practica_creativa/resources/airflow
+```
+```
+python3.7 -m venv env_airflow37
+source env_airflow37/bin/activate
+```
+```
 pip install -r requirements.txt -c constraints.txt
 ```
-- Set the `PROJECT_HOME` env variable with the path of you cloned repository, for example:
+Establecemos las variables de entorno AIRFLOW_HOME, PROJECT_HOME.
+export AIRFLOW_HOME=/home/ibdn/airflow
+export PROJECT_HOME=/home/ibdn/practica_creativa
 ```
-export PROJECT_HOME=/home/user/Desktop/practica_creativa
+export AIRFLOW_HOME=/home/ibdn/airflow
+export PROJECT_HOME=/home/ibdn/practica_creativa
 ```
-- Configure airflow environment
-
-```shell
-export AIRFLOW_HOME=~/airflow
-mkdir $AIRFLOW_HOME/dags
-mkdir $AIRFLOW_HOME/logs
-mkdir $AIRFLOW_HOME/plugins
-
+Creamos los directorios necesarios
+```
+mkdir -p $AIRFLOW_HOME/{dags,logs,plugins}
+```
+Y por ultimo iniciamos airflow y creamos un usuario (admin)
+```
+airflow db init
+```
+```
 airflow users create \
-    --username admin \
-    --firstname Jack \
-    --lastname  Sparrow\
-    --role Admin \
-    --email example@mail.org
+  --username admin \
+  --firstname Jack \
+  --lastname Sparrow \
+  --role Admin \
+  --email example@mail.org
 ```
-- Start airflow scheduler and webserver
-```shell
+
+Y añadimos el DAG
+```
+cp /home/ibdn/practica_creativa/resources/airflow/setup.py /home/ibdn/airflow/dags/
+```
+
+Ahora abrimos un terminal, donde se desplegará el scheduler
+```
+cd /home/ibdn/practica_creativa/resources/airflow
+source env_airflow37/bin/activate
+export AIRFLOW_HOME=/home/ibdn/airflow
+export PROJECT_HOME=/home/ibdn/practica_creativa
+```
+Desplegamos el scheduler
+```
+airflow scheduler
+```
+
+Ahora abrimos otro terminal, donde se desplegará el servidor web
+```
+cd /home/ibdn/practica_creativa/resources/airflow
+source env_airflow37/bin/activate
+export AIRFLOW_HOME=/home/ibdn/airflow
+```
+Desplegamos el servidor
+```
 airflow webserver --port 8080
-airflow sheduler
 ```
-Vistit http://localhost:8080/home for the web version of Apache Airflow.
 
-- The DAG is defined in `resources/airflow/setup.py`.
-- **TODO**: add the DAG and execute it to train the model (see the official documentation of Apache Airflow to learn how to exectue and add a DAG with the airflow command).
-- **TODO**: explain the architecture of apache airflow (see the official documentation of Apache Airflow).
-- **TODO**: analyzing the setup.py: what happens if the task fails?, what is the peridocity of the task?
-
-![Apache Airflow DAG success](images/airflow.jpeg)
-
-
-
-
-
+Entrar en http://localhost:8080/home para acceder a la web de Apache Airflow.
 
 
 
