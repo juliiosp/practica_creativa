@@ -25,7 +25,7 @@ La aplicación está desplegada en Google Cloud y se puede acceder a la API Flas
 ```
 http://34.175.194.66:5001/flights/delays/predict_kafka
 ```
-Una vez dentro, se puede usar con normalidad.
+Una vez dentro, se puede la aplicación está disponible para usar.
 
 ### Entrenamiento con Apache Airflow
 Se ha implementado el entrenamiento con Apache AirFlow. Para conseguirlo hay que realizar los siguientes pasos:
