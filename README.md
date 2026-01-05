@@ -26,9 +26,31 @@ Entrar en http://localhost:5001/flights/delays/predict_kafka para acceder a la a
 ## Mejoras realizadas
 
 ### Aplicación disponible en Google Cloud
+Para levantar la aplicación en Google Cloud, hay que crear una MV con Ubuntu 22.04 LTS y 100GB de memoria. Además hay que crear un firewall en el puerto 5001 para poder acceder a la web.
+Una vez creada, nos conectamos por SSH y ejecutamos los siguientes comandos.
+### Clonar repositorio
+```
+git clone https://github.com/juliiosp/practica_creativa.git
+```
+```
+cd practica_creativa
+```
+### Descargar datos
+```
+resources/download_data.sh
+```
+### Instalar Docker y Docker Compose
+```
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y docker.io docker-compose
+```
+### Levantar aplicación
+```
+sudo docker compose up --build
+```
 La aplicación está desplegada en Google Cloud y se puede acceder a la API Flask directamente desde la siguiente URL:
 ```
-http://34.175.194.66:5001/flights/delays/predict_kafka
+http://<IP_EXTERNA_MV>:5001/flights/delays/predict_kafka
 ```
 Una vez dentro, se puede la aplicación está disponible para usar.
 
