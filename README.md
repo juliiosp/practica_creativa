@@ -16,6 +16,7 @@ resources/download_data.sh
 ```
 docker compose up --build
 ```
+Entrar en http://localhost:5001/flights/delays/predict_kafka para acceder a la aplicación web.
 
 ## Mejoras realizadas
 
@@ -78,7 +79,6 @@ Desplegamos el scheduler
 ```
 airflow scheduler
 ```
-
 Ahora abrimos otro terminal, donde se desplegará el servidor web
 ```
 cd /home/ibdn/practica_creativa/resources/airflow
@@ -89,8 +89,4 @@ Desplegamos el servidor
 ```
 airflow webserver --port 8080
 ```
-
 Entrar en http://localhost:8080/home para acceder a la web de Apache Airflow.
-
-
-
