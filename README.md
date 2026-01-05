@@ -45,7 +45,9 @@ export PROJECT_HOME=/home/ibdn/practica_creativa
 ```
 Creamos los directorios necesarios
 ```
-mkdir -p $AIRFLOW_HOME/{dags,logs,plugins}
+mkdir $AIRFLOW_HOME/dags
+mkdir $AIRFLOW_HOME/logs
+mkdir $AIRFLOW_HOME/plugins
 ```
 Y por ultimo iniciamos airflow y creamos un usuario (admin)
 ```
