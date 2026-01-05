@@ -22,42 +22,35 @@ $( "#flight_delay_classification" ).submit(function( event ) {
     // If the response is ok, print a message to wait and start polling
     if(response.status == "OK") {
       $( "#result" ).empty().append( "Processing..." );
-
-      // Abro websocket
       openSocket(response.id);
     }
   });
 });
 
-var socket = null;
-// Poll the prediction URL
+let socket = io();
+let currentID = null;
+
+socket.on("connect", function () {
+  console.log("Socket connected", socket.id);
+  if (currentID) socket.emit("join", { uuid: currentID });
+});
+
+socket.on("prediction_result", function (prediction) {
+  if (prediction.UUID && currentID && prediction.UUID !== currentID) return;
+  renderPage(prediction);
+});
+
+socket.on("disconnect", function () {
+  console.log("Socket disconnected");
+});
+
 function openSocket(id) {
-
-  console.log("Creating WebSocket connection...");
-
-  if (socket) {
-    console.log("Closing previous socket");
-    socket.disconnect();
-    socket = null;
+  currentID = id;
+  if (socket && socket.connected) {
+    socket.emit("join", { uuid: id });
   }
 
-  socket = io();
-
-  socket.on("connect", function() {
-    console.log("Socket connected", socket.id);
-    socket.emit("join", {uuid: id});
-  });
-
-  socket.on("prediction_result", function(prediction) {
-    if (prediction.UUID && prediction.UUID !== id) return;
-    renderPage(prediction);
-    socket.disconnect();
-    socket = null;
-  });
-
-  socket.on("disconnect", function() {
-    console.log("Closing WebSocket");
-  });
+  console.log("Joined room UUID:", id);
 }
 
 // Render the response on the page for splits:

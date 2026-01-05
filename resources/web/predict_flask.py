@@ -14,7 +14,7 @@ import predict_utils
 # Set up Flask, Mongo and Elasticsearch
 app = Flask(__name__)
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 @socketio.on("join")
 def on_join(data):
@@ -567,8 +567,7 @@ def shutdown():
 if __name__ == "__main__":
     socketio.run(
     app,
-    debug=True,
-    host='0.0.0.0',
-    port='5001',
-    allow_unsafe_werkzeug=True
+    debug=False,
+    host="0.0.0.0",
+    port=5001
   )

@@ -1,5 +1,7 @@
 Flask
 flask-socketio
+gevent
+gevent-socketio
 beautifulsoup4 
 bs4
 frozendict
