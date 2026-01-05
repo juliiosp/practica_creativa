@@ -12,6 +12,11 @@ cd practica_creativa
 ```
 resources/download_data.sh
 ```
+### Genera .jar
+```
+cd ../practica_creativa/flight_prediction
+sbt package
+```
 ### Levantar aplicación
 ```
 docker compose up --build
