@@ -46,13 +46,13 @@ sudo apt install -y docker.io docker-compose
 ```
 ### Levantar aplicación
 ```
-sudo docker compose up --build
+sudo docker-compose up --build
 ```
 La aplicación está desplegada en Google Cloud y se puede acceder a la API Flask directamente desde la siguiente URL:
 ```
 http://<IP_EXTERNA_MV>:5001/flights/delays/predict_kafka
 ```
-Una vez dentro, se puede la aplicación está disponible para usar.
+Una vez dentro, la aplicación está disponible para usar.
 
 ### Entrenamiento con Apache Airflow
 Se ha implementado el entrenamiento con Apache AirFlow. Para conseguirlo hay que realizar los siguientes pasos:
