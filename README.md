@@ -39,8 +39,6 @@ source env_airflow37/bin/activate
 pip install -r requirements.txt -c constraints.txt
 ```
 Establecemos las variables de entorno AIRFLOW_HOME, PROJECT_HOME.
-export AIRFLOW_HOME=/home/ibdn/airflow
-export PROJECT_HOME=/home/ibdn/practica_creativa
 ```
 export AIRFLOW_HOME=/home/ibdn/airflow
 export PROJECT_HOME=/home/ibdn/practica_creativa
