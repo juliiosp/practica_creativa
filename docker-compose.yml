@@ -16,8 +16,6 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-    volumes:
-      - kafka_data:/var/lib/kafka/data
 
   kafka-init:
     image: apache/kafka:3.9.0
@@ -135,4 +133,3 @@ services:
 
 volumes:
   mongo_data:
-  kafka_data:

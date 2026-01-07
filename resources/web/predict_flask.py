@@ -1,10 +1,11 @@
 import sys, os, re
+from gevent import monkey 
+monkey.patch_all()
 from flask import Flask, render_template, request
 from pymongo import MongoClient
 from bson import json_util
 from flask_socketio import SocketIO, join_room
-import threading
-
+import gevent
 # Configuration details
 import config
 
@@ -53,7 +54,7 @@ def kafka_response_listener():
     if uid:
       socketio.emit("prediction_result", prediction, room=uid)
 
-threading.Thread(target = kafka_response_listener, daemon=True).start()
+gevent.spawn(kafka_response_listener)
 
 import uuid
 
