@@ -55,19 +55,27 @@ http://<IP_EXTERNA_MV>:5001/flights/delays/predict_kafka
 Una vez dentro, la aplicación está disponible para usar.
 
 ### Entrenamiento con Apache Airflow
-*tener instalado java, spark, findspark*
-```
-sdk instal java17.0.14-amzn
-```
-```
-sdk instal spark3.5.3
-```
-```
-pip3 install findspark
 ```
 Se ha implementado el entrenamiento con Apache AirFlow. Para conseguirlo hay que realizar los siguientes pasos:
+### Clonar repositorio
 ```
-cd /home/ibdn/practica_creativa/resources/airflow
+git clone https://github.com/juliiosp/practica_creativa.git
+```
+```
+cd practica_creativa
+```
+### Descargar datos
+```
+resources/download_data.sh
+```
+### Genera .jar
+```
+cd flight_prediction
+sbt package
+```
+### Vamos al directorio de airflow
+```
+cd home/practica_creativa/resources/airflow
 ```
 ```
 python3.7 -m venv env_airflow37
@@ -115,4 +123,13 @@ Desplegamos el servidor
 ```
 airflow webserver --port 8080
 ```
-Entrar en http://localhost:8080/home para acceder a la web de Apache Airflow.
+Entrar en http://localhost:8080/home para acceder a la web de Apache Airflow e iniciar sesión.
+<img width="647" height="335" alt="image" src="https://github.com/user-attachments/assets/57a6c4a4-dac0-437f-8897-fb1241795fa3" />
+
+Activamos el DAG recuadrado y el modelo se empezará a entrenar.
+<img width="647" height="332" alt="image" src="https://github.com/user-attachments/assets/7222cb19-f57e-49dd-be39-5bcccde56dd3" />
+
+
+
+
+
