@@ -55,7 +55,6 @@ http://<IP_EXTERNA_MV>:5001/flights/delays/predict_kafka
 Una vez dentro, la aplicación está disponible para usar.
 
 ### Entrenamiento con Apache Airflow
-```
 Se ha implementado el entrenamiento con Apache AirFlow. Para conseguirlo hay que realizar los siguientes pasos:
 ### Clonar repositorio
 ```
