@@ -28,7 +28,8 @@ $( "#flight_delay_classification" ).submit(function( event ) {
         }
       });
 
-    }, 400); 
+    }, 400);
+});
 
 let socket = io();
 let currentID = null;
