@@ -84,6 +84,10 @@ Esperamos a que se termine de entrenar, generando distintos ficheros en el direc
 Salimos de ambas terminales con Ctrl+C.
 
 ### Levantar aplicación
+Abrimos un terminal
+```
+cd practica_creativa
+```
 ```
 docker compose up --build
 ```
