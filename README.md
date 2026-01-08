@@ -55,6 +55,16 @@ http://<IP_EXTERNA_MV>:5001/flights/delays/predict_kafka
 Una vez dentro, la aplicación está disponible para usar.
 
 ### Entrenamiento con Apache Airflow
+*tener instalado java, spark, findspark*
+```
+sdk instal java17.0.14-amzn
+```
+```
+sdk instal spark3.5.3
+```
+```
+pip3 install findspark
+```
 Se ha implementado el entrenamiento con Apache AirFlow. Para conseguirlo hay que realizar los siguientes pasos:
 ```
 cd /home/ibdn/practica_creativa/resources/airflow
