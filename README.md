@@ -93,7 +93,7 @@ docker compose up --build
 ```
 Entrar en http://localhost:5001/flights/delays/predict_kafka para acceder a la aplicación web.
 
-### Aplicación disponible en Google Cloud
+### Aplicación disponible en Google Cloud (Mejora)
 Para levantar la aplicación en Google Cloud, hay que crear una MV con Ubuntu 22.04 LTS y 100GB de memoria. Además hay que crear un firewall en el puerto 5001 para poder acceder a la web.
 Una vez creada, nos conectamos por SSH y ejecutamos los siguientes comandos.
 ### Clonar repositorio previamente entrenado.
