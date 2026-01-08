@@ -1,7 +1,7 @@
 # Práctica Creativa BDFI
 Para probar esta práctica hay que seguir estos pasos.
 
-### Entrenamiento con Apache Airflow
+### Entrenamiento con Apache Airflow (Mejora)
 Se ha implementado el entrenamiento con Apache AirFlow. Para conseguirlo hay que realizar los siguientes pasos:
 ### Clonar repositorio
 ```
@@ -70,10 +70,16 @@ Desplegamos el servidor
 airflow webserver --port 8080
 ```
 Entrar en http://localhost:8080/home para acceder a la web de Apache Airflow e iniciar sesión.
+
 <img width="647" height="335" alt="image" src="https://github.com/user-attachments/assets/57a6c4a4-dac0-437f-8897-fb1241795fa3" />
 
 Activamos el DAG recuadrado y el modelo se empezará a entrenar.
+
 <img width="647" height="332" alt="image" src="https://github.com/user-attachments/assets/7222cb19-f57e-49dd-be39-5bcccde56dd3" />
+
+Esperamos a que se termine de entrenar, generando distintos ficheros en el directorio models/.
+
+<img width="646" height="334" alt="image" src="https://github.com/user-attachments/assets/b2d3f10b-aa90-4d97-b63e-c13d5b180ceb" />
 
 Salimos de ambas terminales con Ctrl+C.
 
