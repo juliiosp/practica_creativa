@@ -21,7 +21,7 @@ sbt package
 ```
 ### Vamos al directorio de airflow
 ```
-cd home/practica_creativa/resources/airflow
+cd ../resources/airflow
 ```
 ```
 python3.7 -m venv env_airflow37
