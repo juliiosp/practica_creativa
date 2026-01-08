@@ -9,26 +9,22 @@ $( "#flight_delay_classification" ).submit(function( event ) {
     term = $form.find( "input[name='s']" ).val(),
     url = $form.attr( "action" );
 
-  setTimeout(() => {
+  // Send the data using post
+  var posting = $.post(
+    url,
+    $( "#flight_delay_classification" ).serialize()
+  );
 
-      // Send the data using post
-      var posting = $.post(
-        url,
-        $( "#flight_delay_classification" ).serialize()
-      );
+  // Submit the form and parse the response
+  posting.done(function( data ) {
+    var response = JSON.parse(data);
 
-      // Submit the form and parse the response
-      posting.done(function( data ) {
-        var response = JSON.parse(data);
-
-        // If the response is ok, print a message to wait for results
-        if(response.status == "OK") {
-          $( "#result" ).empty().append( "Processing..." );
-          openSocket(response.id);
-        }
-      });
-
-    }, 400);
+    // If the response is ok, print a message to wait for results
+    if(response.status == "OK") {
+      $( "#result" ).empty().append( "Processing..." );
+      openSocket(response.id);
+    }
+  });
 });
 
 let socket = io();
