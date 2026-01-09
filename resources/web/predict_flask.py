@@ -21,20 +21,30 @@ app = Flask(__name__)
 
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
+listener_started = False
+
 def start_kafka_listener():
   socketio.start_background_task(target=kafka_response_listener)
-
+  
 @socketio.on("connect")
 def webSocket_Connect():
-  start_kafka_listener()
-  print("WebSocket client connected")
+  global listener_started
+  if not listener_started:
+    listener_started = True
+    socketio.start_background_task(kafka_response_listener)
+    print("KAFKA_LISTENER: started once")
+  print("SOCKET: client connected")
 
 @socketio.on("join")
 def on_join(data):
   uid = data.get("uuid")
   if uid:
     join_room(uid)
-
+    
+@socketio.on("disconnect")
+def on_disconnect():
+  print("SOCKET: client disconnected")
+  
 client = MongoClient("mongodb://mongo:27017")
 
 from pyelasticsearch import ElasticSearch
