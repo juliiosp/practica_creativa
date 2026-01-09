@@ -50,17 +50,6 @@ socket.on("disconnect", function () {
   console.log("Socket disconnected");
 });
 
-function openSocket(id) {
-  currentID = id;
-  if (!socket.connected) {
-    console.log("Socket not connected yet, will join on connect. UUID:", id);
-    socket.connect();
-    return;
-  }
-  socket.emit("join", { uuid: id });
-  console.log("Sent join for UUID:", id);
-}
-
 // Render the response on the page for splits:
 // [-float("inf"), -15.0, 0, 30.0, float("inf")]
 function renderPage(response) {
