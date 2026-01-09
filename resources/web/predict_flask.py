@@ -54,8 +54,6 @@ def kafka_response_listener():
     if uid:
       socketio.emit("prediction_result", prediction, room=uid)
 
-gevent.spawn(kafka_response_listener)
-
 import uuid
 
 # Chapter 5 controller: Fetch a flight and display it
@@ -566,10 +564,11 @@ def shutdown():
   return 'Server shutting down...'
 
 if __name__ == "__main__":
-    socketio.run(
+  gevent.spawn(kafka_response_listener)
+  socketio.run(
     app,
-    debug=False,
     host="0.0.0.0",
     port=5001,
+    debug=True,
     use_reloader=False
   )
