@@ -22,7 +22,13 @@ $( "#flight_delay_classification" ).submit(function( event ) {
     // If the response is ok, print a message to wait for results
     if(response.status == "OK") {
       $( "#result" ).empty().append( "Processing..." );
-      openSocket(response.id);
+      currentID = response.id;
+
+      if(socket.connected) {
+        socket.emit("join", { uuid: response.id });
+      } else {
+        socket.connect();
+      }
     }
   });
 });
@@ -46,11 +52,13 @@ socket.on("disconnect", function () {
 
 function openSocket(id) {
   currentID = id;
-  if (socket && socket.connected) {
-    socket.emit("join", { uuid: id });
+  if (!socket.connected) {
+    console.log("Socket not connected yet, will join on connect. UUID:", id);
+    socket.connect();
+    return;
   }
-
-  console.log("Joined room UUID:", id);
+  socket.emit("join", { uuid: id });
+  console.log("Sent join for UUID:", id);
 }
 
 // Render the response on the page for splits:
