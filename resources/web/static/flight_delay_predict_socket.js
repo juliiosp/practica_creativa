@@ -27,10 +27,7 @@ $( "#flight_delay_classification" ).submit(function( event ) {
   });
 });
 
-const socket = io({
-  transports: ["websocket"],
-  upgrade: false
-});
+let socket = io();
 let currentID = null;
 
 socket.on("connect", function () {
