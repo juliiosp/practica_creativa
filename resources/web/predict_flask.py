@@ -8,7 +8,11 @@ from flask_socketio import SocketIO, join_room
 import gevent
 # Configuration details
 import config
-
+import uuid
+import json
+# Date/time stuff
+import iso8601
+import datetime
 # Helpers for search and prediction APIs
 import predict_utils
 
@@ -16,6 +20,14 @@ import predict_utils
 app = Flask(__name__)
 
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
+
+def start_kafka_listener():
+  socketio.start_background_task(target=kafka_response_listener)
+
+@socketio.on("connect")
+def webSocket_Connect():
+  start_kafka_listener()
+  print("WebSocket client connected")
 
 @socketio.on("join")
 def on_join(data):
@@ -27,12 +39,6 @@ client = MongoClient("mongodb://mongo:27017")
 
 from pyelasticsearch import ElasticSearch
 elastic = ElasticSearch(config.ELASTIC_URL)
-
-import json
-
-# Date/time stuff
-import iso8601
-import datetime
 
 # Setup Kafka
 from kafka import KafkaProducer, KafkaConsumer
@@ -54,7 +60,6 @@ def kafka_response_listener():
     if uid:
       socketio.emit("prediction_result", prediction, room=uid)
 
-import uuid
 
 # Chapter 5 controller: Fetch a flight and display it
 @app.route("/on_time_performance")
@@ -564,7 +569,6 @@ def shutdown():
   return 'Server shutting down...'
 
 if __name__ == "__main__":
-  gevent.spawn(kafka_response_listener)
   socketio.run(
     app,
     host="0.0.0.0",
