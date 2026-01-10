@@ -27,12 +27,10 @@ def start_kafka_listener():
   if not kafka_listener_started:
     kafka_listener_started = True
     socketio.start_background_task(target=kafka_response_listener)
-    print("KAFKA_LISTENER: started once")
 
 @socketio.on("connect")
 def webSocket_Connect():
   start_kafka_listener()
-  print("WebSocket client connected")
 
 @socketio.on("join")
 def on_join(data):
