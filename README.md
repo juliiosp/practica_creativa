@@ -123,4 +123,16 @@ http://<IP_EXTERNA_MV>:5001/flights/delays/predict_kafka
 Una vez dentro, la aplicación está disponible para usar.
 
 
+### Ver mensajes kafka
+```
+sudo docker exec -it kafka bash
+```
+```
+bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic flight-delay-ml-response \
+  --partition 0 \
+  --offset 0 \
+  --timeout-ms 10000 \
+```
 
