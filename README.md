@@ -1,7 +1,7 @@
 # Práctica Creativa BDFI
 Para probar esta práctica hay que seguir estos pasos.
 
-### Entrenamiento con Apache Airflow (Mejora)
+## Entrenamiento con Apache Airflow (Mejora)
 Se ha implementado el entrenamiento con Apache AirFlow. Para conseguirlo hay que realizar los siguientes pasos:
 ### Clonar repositorio
 ```
@@ -93,7 +93,7 @@ docker compose up --build
 ```
 Entrar en http://localhost:5001/flights/delays/predict_kafka para acceder a la aplicación web.
 
-### Aplicación disponible en Google Cloud (Mejora)
+## Aplicación disponible en Google Cloud (Mejora)
 Para levantar la aplicación en Google Cloud, hay que crear una MV con Ubuntu 22.04 LTS y 100GB de memoria. Además hay que crear un firewall en el puerto 5001 para poder acceder a la web.
 Una vez creada, nos conectamos por SSH y ejecutamos los siguientes comandos.
 ### Clonar repositorio previamente entrenado.
@@ -123,16 +123,32 @@ http://<IP_EXTERNA_MV>:5001/flights/delays/predict_kafka
 Una vez dentro, la aplicación está disponible para usar.
 
 
+## Comandos útiles
+
 ### Ver mensajes kafka
 ```
 sudo docker exec -it kafka bash
 ```
 ```
-bin/kafka-console-consumer.sh \
+opt/kafkfa/bin/kafka-console-consumer.sh \
   --bootstrap-server localhost:9092 \
   --topic flight-delay-ml-response \
   --partition 0 \
   --offset 0 \
-  --timeout-ms 10000 \
+  --timeout-ms 10000
+```
+
+### Ver mensajes mongo
+```
+sudo docker exec -it mongo bash
+```
+```
+mongosh
+```
+```
+use agile_data_science
+```
+```
+db.flight_delay_ml_response.find()
 ```
 
